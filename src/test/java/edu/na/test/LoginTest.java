@@ -2,11 +2,9 @@ package edu.na.test;
 
 import edu.na.utilities.ConfigurationReader;
 import edu.na.utilities.WebDriverFactory;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -19,9 +17,9 @@ public class LoginTest {
     @BeforeMethod
     public void setUpMethod() {
         driver = WebDriverFactory.getDriver("chrome");
-        driver.get(ConfigurationReader.get("url"));
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        driver.get(ConfigurationReader.get("url"));
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     }
 
     @AfterMethod
@@ -31,9 +29,41 @@ public class LoginTest {
     }
 
     @Test
-    public void LoginTest() {
+    public void PositiveUsernameTest() {
+        driver.findElement(By.id("userName")).sendKeys(ConfigurationReader.get("username"));
+        driver.findElement(By.id("siteNavBar_welcomeBackBarLoggedOut_JicsLoginRedirectContinue")).click();
+        driver.findElement(By.id("password")).sendKeys(ConfigurationReader.get("password"));
+        driver.findElement(By.name("siteNavBar$welcomeBackBarLoggedOut$ButtonLogin")).click();
 
-       driver.findElement(By.id("userName")).sendKeys(ConfigurationReader.get("username"));
+        Assert.assertEquals(driver.getCurrentUrl(),"https://portal.na.edu/ICS/");
+    }
 
+    @Test
+    public void NegativeUsernameTest() {
+        driver.findElement(By.id("userName")).sendKeys("mustafa");
+        driver.findElement(By.id("siteNavBar_welcomeBackBarLoggedOut_JicsLoginRedirectContinue")).click();
+        driver.findElement(By.id("password")).sendKeys(ConfigurationReader.get("password"));
+        driver.findElement(By.name("siteNavBar$welcomeBackBarLoggedOut$ButtonLogin")).click();
+
+        Assert.assertEquals(driver.getCurrentUrl(),"https://portal.na.edu/ics/");
+    }
+    @Test
+    public void PositivePasswordTest() {
+        driver.findElement(By.id("userName")).sendKeys(ConfigurationReader.get("username"));
+        driver.findElement(By.id("siteNavBar_welcomeBackBarLoggedOut_JicsLoginRedirectContinue")).click();
+        driver.findElement(By.id("password")).sendKeys(ConfigurationReader.get("password"));
+        driver.findElement(By.name("siteNavBar$welcomeBackBarLoggedOut$ButtonLogin")).click();
+
+        Assert.assertEquals(driver.getCurrentUrl(),"https://portal.na.edu/ICS/");
+    }
+
+    @Test
+    public void NegativePasswordTest() {
+        driver.findElement(By.id("userName")).sendKeys(ConfigurationReader.get("username"));
+        driver.findElement(By.id("siteNavBar_welcomeBackBarLoggedOut_JicsLoginRedirectContinue")).click();
+        driver.findElement(By.id("password")).sendKeys("password");
+        driver.findElement(By.name("siteNavBar$welcomeBackBarLoggedOut$ButtonLogin")).click();
+
+        Assert.assertEquals(driver.getCurrentUrl(),"https://portal.na.edu/ics/");
     }
 }
